@@ -2,9 +2,6 @@ package startup
 
 import (
 	"fmt"
-	post "github.com/XWS-DISLINKT/dislinkt/common/proto/post-service"
-	"go.mongodb.org/mongo-driver/mongo"
-	"google.golang.org/grpc"
 	"log"
 	"net"
 	"post-service/application"
@@ -12,6 +9,10 @@ import (
 	"post-service/infrastructure/api"
 	"post-service/infrastructure/persistence"
 	"post-service/startup/config"
+
+	post "github.com/XWS-DISLINKT/dislinkt/common/proto/post-service"
+	"go.mongodb.org/mongo-driver/mongo"
+	"google.golang.org/grpc"
 )
 
 type Server struct {
@@ -46,12 +47,14 @@ func (server *Server) initMongoClient() *mongo.Client {
 func (server *Server) initIPostService(client *mongo.Client) domain.IPostService {
 	collection := persistence.NewPostMongoDb(client)
 	collection.DeleteAll()
+
 	for _, post := range posts {
-		err := collection.Insert(post)
+		_, err := collection.Insert(post)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
+
 	return collection
 }
 

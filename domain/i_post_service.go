@@ -7,6 +7,6 @@ import (
 type IPostService interface {
 	Get(id primitive.ObjectID) (*Post, error)
 	GetAll() ([]*Post, error)
-	Insert(post *Post) error
+	Insert(post *Post) (*Post, error)
 	DeleteAll()
 }

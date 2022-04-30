@@ -2,10 +2,11 @@ package persistence
 
 import (
 	"context"
+	"post-service/domain"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"post-service/domain"
 )
 
 const (
@@ -34,13 +35,13 @@ func (collection *PostMongoDb) GetAll() ([]*domain.Post, error) {
 	return collection.filter(filter)
 }
 
-func (collection *PostMongoDb) Insert(post *domain.Post) error {
+func (collection *PostMongoDb) Insert(post *domain.Post) (*domain.Post, error) {
 	result, err := collection.posts.InsertOne(context.TODO(), post)
 	if err != nil {
-		return err
+		return post, err
 	}
 	post.Id = result.InsertedID.(primitive.ObjectID)
-	return nil
+	return post, nil
 }
 
 func (collection *PostMongoDb) DeleteAll() {

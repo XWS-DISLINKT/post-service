@@ -1,8 +1,10 @@
 package api
 
 import (
-	pb "github.com/XWS-DISLINKT/dislinkt/common/proto/post-service"
 	"post-service/domain"
+
+	pb "github.com/XWS-DISLINKT/dislinkt/common/proto/post-service"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func mapPost(post *domain.Post) *pb.Post {
@@ -12,4 +14,20 @@ func mapPost(post *domain.Post) *pb.Post {
 		Text:   post.Text,
 	}
 	return postPb
+}
+
+func mapPostToDomain(post *pb.Post) *domain.Post {
+	id, err := primitive.ObjectIDFromHex(post.Id)
+	if err != nil {
+		return nil
+	}
+	userId, err := primitive.ObjectIDFromHex(post.Id)
+	if err != nil {
+		return nil
+	}
+	return &domain.Post{
+		Id:     id,
+		UserId: userId,
+		Text:   post.Text,
+	}
 }

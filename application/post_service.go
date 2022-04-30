@@ -1,8 +1,9 @@
 package application
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"post-service/domain"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type PostService struct {
@@ -21,4 +22,8 @@ func (service *PostService) Get(id primitive.ObjectID) (*domain.Post, error) {
 
 func (service *PostService) GetAll() ([]*domain.Post, error) {
 	return service.iPostService.GetAll()
+}
+
+func (service *PostService) Insert(postRequest *domain.Post) (post *domain.Post, err error) {
+	return service.iPostService.Insert(postRequest)
 }

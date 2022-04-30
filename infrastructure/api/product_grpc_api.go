@@ -2,9 +2,10 @@ package api
 
 import (
 	"context"
+	"post-service/application"
+
 	pb "github.com/XWS-DISLINKT/dislinkt/common/proto/post-service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"post-service/application"
 )
 
 type PostHandler struct {
@@ -48,4 +49,13 @@ func (handler *PostHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 		response.Posts = append(response.Posts, current)
 	}
 	return response, nil
+}
+
+func (handler *PostHandler) Post(ctx context.Context, request *pb.PostRequest) (*pb.PostResponse, error) {
+	post := mapPostToDomain((*request).Post)
+	post, err := handler.service.Insert(post)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.PostResponse{Post: mapPost(post)}, nil
 }
