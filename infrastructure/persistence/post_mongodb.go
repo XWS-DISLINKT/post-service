@@ -35,13 +35,13 @@ func (collection *PostMongoDb) GetAll() ([]*domain.Post, error) {
 	return collection.filter(filter)
 }
 
-func (collection *PostMongoDb) Insert(post *domain.Post) (*domain.Post, error) {
+func (collection *PostMongoDb) Insert(post *domain.Post) error {
 	result, err := collection.posts.InsertOne(context.TODO(), post)
 	if err != nil {
-		return post, err
+		return err
 	}
 	post.Id = result.InsertedID.(primitive.ObjectID)
-	return post, nil
+	return nil
 }
 
 func (collection *PostMongoDb) DeleteAll() {

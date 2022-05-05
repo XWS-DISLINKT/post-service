@@ -49,7 +49,7 @@ func (server *Server) initIPostService(client *mongo.Client) domain.IPostService
 	collection.DeleteAll()
 
 	for _, post := range posts {
-		_, err := collection.Insert(post)
+		err := collection.Insert(post)
 		if err != nil {
 			log.Fatal(err)
 		}

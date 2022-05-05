@@ -53,7 +53,7 @@ func (handler *PostHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 
 func (handler *PostHandler) Post(ctx context.Context, request *pb.PostRequest) (*pb.PostResponse, error) {
 	post := mapPostToDomain((*request).Post)
-	post, err := handler.service.Insert(post)
+	err := handler.service.Create(post)
 	if err != nil {
 		return nil, err
 	}

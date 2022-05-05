@@ -24,6 +24,6 @@ func (service *PostService) GetAll() ([]*domain.Post, error) {
 	return service.iPostService.GetAll()
 }
 
-func (service *PostService) Insert(postRequest *domain.Post) (post *domain.Post, err error) {
+func (service *PostService) Create(postRequest *domain.Post) error {
 	return service.iPostService.Insert(postRequest)
 }
