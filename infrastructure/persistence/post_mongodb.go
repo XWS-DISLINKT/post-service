@@ -48,6 +48,16 @@ func (collection *PostMongoDb) GetByUser(id primitive.ObjectID) ([]*domain.Post,
 	return collection.filterPosts(filter)
 }
 
+func (collection *PostMongoDb) GetAllReactionsByPost(id primitive.ObjectID) ([]*domain.PostReaction, error) {
+	filter := bson.M{"postId": id}
+	return collection.filterReactions(filter)
+}
+
+func (collection *PostMongoDb) GetAllCommentsByPost(id primitive.ObjectID) ([]*domain.Comment, error) {
+	filter := bson.M{"postId": id}
+	return collection.filterComments(filter)
+}
+
 func (collection *PostMongoDb) Insert(post *domain.Post) error {
 	result, err := collection.posts.InsertOne(context.TODO(), post)
 	if err != nil {
@@ -95,6 +105,25 @@ func (collection *PostMongoDb) filterPosts(filter interface{}) ([]*domain.Post, 
 	}
 	return decode(cursor)
 }
+func (collection *PostMongoDb) filterReactions(filter interface{}) ([]*domain.PostReaction, error) {
+	cursor, err := collection.reactions.Find(context.TODO(), filter)
+	defer cursor.Close(context.TODO())
+
+	if err != nil {
+		return nil, err
+	}
+	return decodeReaction(cursor)
+}
+
+func (collection *PostMongoDb) filterComments(filter interface{}) ([]*domain.Comment, error) {
+	cursor, err := collection.comments.Find(context.TODO(), filter)
+	defer cursor.Close(context.TODO())
+
+	if err != nil {
+		return nil, err
+	}
+	return decodeComment(cursor)
+}
 
 func (collection *PostMongoDb) filterPostsOne(filter interface{}) (post *domain.Post, err error) {
 	result := collection.posts.FindOne(context.TODO(), filter)
@@ -110,6 +139,31 @@ func decode(cursor *mongo.Cursor) (posts []*domain.Post, err error) {
 			return
 		}
 		posts = append(posts, &post)
+	}
+	err = cursor.Err()
+	return
+}
+
+func decodeReaction(cursor *mongo.Cursor) (reactions []*domain.PostReaction, err error) {
+	for cursor.Next(context.TODO()) {
+		var reaction domain.PostReaction
+		err = cursor.Decode(&reaction)
+		if err != nil {
+			return
+		}
+		reactions = append(reactions, &reaction)
+	}
+	err = cursor.Err()
+	return
+}
+func decodeComment(cursor *mongo.Cursor) (comments []*domain.Comment, err error) {
+	for cursor.Next(context.TODO()) {
+		var comment domain.Comment
+		err = cursor.Decode(&comment)
+		if err != nil {
+			return
+		}
+		comments = append(comments, &comment)
 	}
 	err = cursor.Err()
 	return

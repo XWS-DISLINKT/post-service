@@ -13,4 +13,6 @@ type IPostService interface {
 	InsertReaction(reaction *PostReaction) error
 	DeleteReaction(postId primitive.ObjectID, userId primitive.ObjectID)
 	InsertComment(comment *Comment) error
+	GetAllReactionsByPost(id primitive.ObjectID) ([]*PostReaction, error)
+	GetAllCommentsByPost(id primitive.ObjectID) ([]*Comment, error)
 }

@@ -42,3 +42,11 @@ func (service *PostService) InsertComment(comment *domain.Comment) error {
 func (service *PostService) DeleteReaction(postId primitive.ObjectID, userId primitive.ObjectID) {
 	service.iPostService.DeleteReaction(postId, userId)
 }
+
+func (service *PostService) GetAllReactionsByPost(id primitive.ObjectID) ([]*domain.PostReaction, error) {
+	return service.iPostService.GetAllReactionsByPost(id)
+}
+
+func (service *PostService) GetAllCommentsByPost(id primitive.ObjectID) ([]*domain.Comment, error) {
+	return service.iPostService.GetAllCommentsByPost(id)
+}

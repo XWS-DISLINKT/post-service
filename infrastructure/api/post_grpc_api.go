@@ -110,3 +110,43 @@ func (handler *PostHandler) CommentPost(ctx context.Context, request *pb.Comment
 	}
 	return &pb.CommentResponse{Comment: mapComment(comment)}, nil
 }
+
+func (handler *PostHandler) GetAllCommentsByPost(ctx context.Context, request *pb.GetRequest) (*pb.AllCommentsResponse, error) {
+	id := request.Id
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	comments, err := handler.service.GetAllCommentsByPost(objectId)
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.AllCommentsResponse{
+		Comments: []*pb.Comment{},
+	}
+	for _, comment := range comments {
+		current := mapComment(comment)
+		response.Comments = append(response.Comments, current)
+	}
+	return response, nil
+}
+
+func (handler *PostHandler) GetAllReactionsByPost(ctx context.Context, request *pb.GetRequest) (*pb.AllReactionsResponse, error) {
+	id := request.Id
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	comments, err := handler.service.GetAllReactionsByPost(objectId)
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.AllReactionsResponse{
+		Reactions: []*pb.PostReaction{},
+	}
+	for _, reaction := range comments {
+		current := mapReaction(reaction)
+		response.Reactions = append(response.Reactions, current)
+	}
+	return response, nil
+}
