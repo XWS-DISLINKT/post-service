@@ -11,21 +11,25 @@ import (
 
 const (
 	DATABASE             = "post"
-	COLLECTION           = "post"
+	POST_COLLECTION      = "post"
 	REACTIONS_COLLECTION = "reactions"
+	COMMENT_COLLECTION   = "comments"
 )
 
 type PostMongoDb struct {
 	posts     *mongo.Collection
 	reactions *mongo.Collection
+	comments  *mongo.Collection
 }
 
 func NewPostMongoDb(client *mongo.Client) domain.IPostService {
-	posts := client.Database(DATABASE).Collection(COLLECTION)
+	posts := client.Database(DATABASE).Collection(POST_COLLECTION)
 	reactions := client.Database(DATABASE).Collection(REACTIONS_COLLECTION)
+	comments := client.Database(DATABASE).Collection(COMMENT_COLLECTION)
 	return &PostMongoDb{
 		posts:     posts,
 		reactions: reactions,
+		comments:  comments,
 	}
 }
 
@@ -56,6 +60,7 @@ func (collection *PostMongoDb) Insert(post *domain.Post) error {
 func (collection *PostMongoDb) DeleteAll() {
 	collection.posts.DeleteMany(context.TODO(), bson.D{{}})
 	collection.reactions.DeleteMany(context.TODO(), bson.D{{}})
+	collection.comments.DeleteMany(context.TODO(), bson.D{{}})
 }
 
 func (collection *PostMongoDb) DeleteReaction(postId primitive.ObjectID, userId primitive.ObjectID) {
@@ -69,6 +74,15 @@ func (collection *PostMongoDb) InsertReaction(reaction *domain.PostReaction) err
 		return err
 	}
 	reaction.Id = result.InsertedID.(primitive.ObjectID)
+	return nil
+}
+
+func (collection *PostMongoDb) InsertComment(comment *domain.Comment) error {
+	result, err := collection.comments.InsertOne(context.TODO(), comment)
+	if err != nil {
+		return err
+	}
+	comment.Id = result.InsertedID.(primitive.ObjectID)
 	return nil
 }
 

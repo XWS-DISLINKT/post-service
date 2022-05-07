@@ -50,6 +50,27 @@ var reactions = []*domain.PostReaction{
 	},
 }
 
+var comments = []*domain.Comment{
+	{
+		Id:     getObjectId("223b0cc3a34d25d8567f9f71"),
+		PostId: getObjectId("623b0cc3a34d25d8567f9f91"),
+		UserId: getObjectId("623b0cc3a34d25d8567f9f91"),
+		Text:   "Ut sagittis augue nulla, non suscipit leo malesuada vitae. In ac pretium lorem, at pretium sapien.",
+	},
+	{
+		Id:     getObjectId("223b0cc3a34d25d8567f9f72"),
+		PostId: getObjectId("623b0cc3a34d25d8567f9f91"),
+		UserId: getObjectId("623b0cc3a34d25d8567f9f92"),
+		Text:   "Vestibulum bibendum efficitur felis sit amet volutpat. Nulla ipsum elit, auctor ut tortor quis, tincidunt pretium risus. Phasellus in odio lacus.",
+	},
+	{
+		Id:     getObjectId("223b0cc3a34d25d8567f9f73"),
+		PostId: getObjectId("623b0cc3a34d25d8567f9f91"),
+		UserId: getObjectId("623b0cc3a34d25d8567f9f93"),
+		Text:   "Sed finibus eleifend neque.",
+	},
+}
+
 func getObjectId(id string) primitive.ObjectID {
 	if objectId, err := primitive.ObjectIDFromHex(id); err == nil {
 		return objectId

@@ -66,3 +66,34 @@ func mapReactionToDomain(reaction *pb.PostReaction) *domain.PostReaction {
 		Reaction: reaction.Reaction,
 	}
 }
+
+func mapComment(comment *domain.Comment) *pb.Comment {
+	commentPb := &pb.Comment{
+		Id:     comment.Id.Hex(),
+		UserId: comment.UserId.Hex(),
+		PostId: comment.PostId.Hex(),
+		Text:   comment.Text,
+	}
+	return commentPb
+}
+
+func mapCommentToDomain(comment *pb.Comment) *domain.Comment {
+	id, err := primitive.ObjectIDFromHex(comment.Id)
+	if err != nil {
+		return nil
+	}
+	userId, err := primitive.ObjectIDFromHex(comment.UserId)
+	if err != nil {
+		return nil
+	}
+	postId, err := primitive.ObjectIDFromHex(comment.PostId)
+	if err != nil {
+		return nil
+	}
+	return &domain.Comment{
+		Id:     id,
+		UserId: userId,
+		PostId: postId,
+		Text:   comment.Text,
+	}
+}

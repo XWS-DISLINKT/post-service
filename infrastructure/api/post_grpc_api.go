@@ -101,3 +101,12 @@ func (handler *PostHandler) DislikePost(ctx context.Context, request *pb.Reactio
 	}
 	return &pb.ReactionResponse{PostReaction: mapReaction(reaction)}, nil
 }
+
+func (handler *PostHandler) CommentPost(ctx context.Context, request *pb.CommentRequest) (*pb.CommentResponse, error) {
+	comment := mapCommentToDomain((*request).Comment)
+	err := handler.service.InsertComment(comment)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.CommentResponse{Comment: mapComment(comment)}, nil
+}

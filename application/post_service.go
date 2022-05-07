@@ -35,14 +35,10 @@ func (service *PostService) InsertReaction(reaction *domain.PostReaction) error 
 	return service.iPostService.InsertReaction(reaction)
 }
 
+func (service *PostService) InsertComment(comment *domain.Comment) error {
+	return service.iPostService.InsertComment(comment)
+}
+
 func (service *PostService) DeleteReaction(postId primitive.ObjectID, userId primitive.ObjectID) {
 	service.iPostService.DeleteReaction(postId, userId)
 }
-
-//func (service *PostService) LikePost(reactionRequest *domain.PostReaction) error {
-//	return service.iPostService.LikePost(reactionRequest)
-//}
-//
-//func (service *PostService) DislikePost(reactionRequest *domain.PostReaction) error {
-//	return service.iPostService.DislikePost(reactionRequest)
-//}

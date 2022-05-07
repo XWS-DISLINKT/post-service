@@ -16,3 +16,10 @@ type PostReaction struct {
 	UserId   primitive.ObjectID `bson:"userId"`
 	Reaction string             `bson:"reaction"`
 }
+
+type Comment struct {
+	Id     primitive.ObjectID `bson:"_id"`
+	PostId primitive.ObjectID `bson:"postId"`
+	UserId primitive.ObjectID `bson:"userId"`
+	Text   string             `bson:"text"`
+}

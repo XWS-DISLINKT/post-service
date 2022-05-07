@@ -62,6 +62,13 @@ func (server *Server) initIPostService(client *mongo.Client) domain.IPostService
 		}
 	}
 
+	for _, comment := range comments {
+		err := collection.InsertComment(comment)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	return collection
 }
 
