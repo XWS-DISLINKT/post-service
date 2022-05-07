@@ -1,9 +1,8 @@
 package application
 
 import (
-	"post-service/domain"
-
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"post-service/domain"
 )
 
 type PostService struct {
@@ -24,6 +23,26 @@ func (service *PostService) GetAll() ([]*domain.Post, error) {
 	return service.iPostService.GetAll()
 }
 
+func (service *PostService) GetByUser(id primitive.ObjectID) ([]*domain.Post, error) {
+	return service.iPostService.GetByUser(id)
+}
+
 func (service *PostService) Create(postRequest *domain.Post) error {
 	return service.iPostService.Insert(postRequest)
 }
+
+func (service *PostService) InsertReaction(reaction *domain.PostReaction) error {
+	return service.iPostService.InsertReaction(reaction)
+}
+
+func (service *PostService) DeleteReaction(postId primitive.ObjectID, userId primitive.ObjectID) {
+	service.iPostService.DeleteReaction(postId, userId)
+}
+
+//func (service *PostService) LikePost(reactionRequest *domain.PostReaction) error {
+//	return service.iPostService.LikePost(reactionRequest)
+//}
+//
+//func (service *PostService) DislikePost(reactionRequest *domain.PostReaction) error {
+//	return service.iPostService.DislikePost(reactionRequest)
+//}

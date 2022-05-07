@@ -51,6 +51,26 @@ func (handler *PostHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 	return response, nil
 }
 
+func (handler *PostHandler) GetByUser(ctx context.Context, request *pb.GetRequest) (*pb.GetAllResponse, error) {
+	id := request.Id
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	posts, err := handler.service.GetByUser(objectId)
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.GetAllResponse{
+		Posts: []*pb.Post{},
+	}
+	for _, post := range posts {
+		current := mapPost(post)
+		response.Posts = append(response.Posts, current)
+	}
+	return response, nil
+}
+
 func (handler *PostHandler) Post(ctx context.Context, request *pb.PostRequest) (*pb.PostResponse, error) {
 	post := mapPostToDomain((*request).Post)
 	err := handler.service.Create(post)
@@ -58,4 +78,26 @@ func (handler *PostHandler) Post(ctx context.Context, request *pb.PostRequest) (
 		return nil, err
 	}
 	return &pb.PostResponse{Post: mapPost(post)}, nil
+}
+
+func (handler *PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) (*pb.ReactionResponse, error) {
+	reaction := mapReactionToDomain((*request).Reaction)
+	handler.service.DeleteReaction(reaction.PostId, reaction.UserId)
+	reaction.Reaction = "like"
+	err := handler.service.InsertReaction(reaction)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.ReactionResponse{PostReaction: mapReaction(reaction)}, nil
+}
+
+func (handler *PostHandler) DislikePost(ctx context.Context, request *pb.ReactionRequest) (*pb.ReactionResponse, error) {
+	reaction := mapReactionToDomain((*request).Reaction)
+	handler.service.DeleteReaction(reaction.PostId, reaction.UserId)
+	reaction.Reaction = "dislike"
+	err := handler.service.InsertReaction(reaction)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.ReactionResponse{PostReaction: mapReaction(reaction)}, nil
 }

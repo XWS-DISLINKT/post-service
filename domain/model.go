@@ -9,3 +9,10 @@ type Post struct {
 	Picture []byte             `bson:"picture"`
 	Links   []string           `bson:"links"`
 }
+
+type PostReaction struct {
+	Id       primitive.ObjectID `bson:"_id"`
+	PostId   primitive.ObjectID `bson:"postId"`
+	UserId   primitive.ObjectID `bson:"userId"`
+	Reaction string             `bson:"reaction"`
+}

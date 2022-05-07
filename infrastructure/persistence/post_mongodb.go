@@ -10,29 +10,38 @@ import (
 )
 
 const (
-	DATABASE   = "post"
-	COLLECTION = "post"
+	DATABASE             = "post"
+	COLLECTION           = "post"
+	REACTIONS_COLLECTION = "reactions"
 )
 
 type PostMongoDb struct {
-	posts *mongo.Collection
+	posts     *mongo.Collection
+	reactions *mongo.Collection
 }
 
 func NewPostMongoDb(client *mongo.Client) domain.IPostService {
 	posts := client.Database(DATABASE).Collection(COLLECTION)
+	reactions := client.Database(DATABASE).Collection(REACTIONS_COLLECTION)
 	return &PostMongoDb{
-		posts: posts,
+		posts:     posts,
+		reactions: reactions,
 	}
 }
 
 func (collection *PostMongoDb) Get(id primitive.ObjectID) (*domain.Post, error) {
 	filter := bson.M{"_id": id}
-	return collection.filterOne(filter)
+	return collection.filterPostsOne(filter)
 }
 
 func (collection *PostMongoDb) GetAll() ([]*domain.Post, error) {
 	filter := bson.D{{}}
-	return collection.filter(filter)
+	return collection.filterPosts(filter)
+}
+
+func (collection *PostMongoDb) GetByUser(id primitive.ObjectID) ([]*domain.Post, error) {
+	filter := bson.M{"userId": id}
+	return collection.filterPosts(filter)
 }
 
 func (collection *PostMongoDb) Insert(post *domain.Post) error {
@@ -46,9 +55,24 @@ func (collection *PostMongoDb) Insert(post *domain.Post) error {
 
 func (collection *PostMongoDb) DeleteAll() {
 	collection.posts.DeleteMany(context.TODO(), bson.D{{}})
+	collection.reactions.DeleteMany(context.TODO(), bson.D{{}})
 }
 
-func (collection *PostMongoDb) filter(filter interface{}) ([]*domain.Post, error) {
+func (collection *PostMongoDb) DeleteReaction(postId primitive.ObjectID, userId primitive.ObjectID) {
+	filter := bson.M{"userId": userId, "postId": postId}
+	collection.reactions.DeleteOne(context.TODO(), filter)
+}
+
+func (collection *PostMongoDb) InsertReaction(reaction *domain.PostReaction) error {
+	result, err := collection.reactions.InsertOne(context.TODO(), reaction)
+	if err != nil {
+		return err
+	}
+	reaction.Id = result.InsertedID.(primitive.ObjectID)
+	return nil
+}
+
+func (collection *PostMongoDb) filterPosts(filter interface{}) ([]*domain.Post, error) {
 	cursor, err := collection.posts.Find(context.TODO(), filter)
 	defer cursor.Close(context.TODO())
 
@@ -58,7 +82,7 @@ func (collection *PostMongoDb) filter(filter interface{}) ([]*domain.Post, error
 	return decode(cursor)
 }
 
-func (collection *PostMongoDb) filterOne(filter interface{}) (post *domain.Post, err error) {
+func (collection *PostMongoDb) filterPostsOne(filter interface{}) (post *domain.Post, err error) {
 	result := collection.posts.FindOne(context.TODO(), filter)
 	err = result.Decode(&post)
 	return

@@ -7,6 +7,9 @@ import (
 type IPostService interface {
 	Get(id primitive.ObjectID) (*Post, error)
 	GetAll() ([]*Post, error)
+	GetByUser(id primitive.ObjectID) ([]*Post, error)
 	Insert(post *Post) error
 	DeleteAll()
+	InsertReaction(reaction *PostReaction) error
+	DeleteReaction(postId primitive.ObjectID, userId primitive.ObjectID)
 }
