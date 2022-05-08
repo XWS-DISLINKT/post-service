@@ -4,7 +4,7 @@ import (
 	"context"
 	"post-service/application"
 	"post-service/domain"
-	"post-service/infrastructure/persistence"
+	"post-service/infrastructure/services"
 
 	connection "github.com/XWS-DISLINKT/dislinkt/common/proto/connection-service"
 	pb "github.com/XWS-DISLINKT/dislinkt/common/proto/post-service"
@@ -77,7 +77,7 @@ func (handler *PostHandler) GetByUser(ctx context.Context, request *pb.GetReques
 func (handler *PostHandler) GetFeed(ctx context.Context, request *pb.GetRequest) (*pb.GetAllResponse, error) {
 	id := request.Id
 	connectionIdsStr := make([]string, 0)
-	connectionResponse, _ := persistence.ConnectionsClient("localhost:8004").GetConnectionsUsernamesFor(context.TODO(),
+	connectionResponse, _ := services.ConnectionsClient("localhost:8004").GetConnectionsUsernamesFor(context.TODO(),
 		&connection.GetConnectionsUsernamesRequest{Id: id})
 	if connectionResponse.Usernames != nil {
 		connectionIdsStr = connectionResponse.Usernames //[]string{"623b0cc3a34d25d8567f9f85"} //
