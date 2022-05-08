@@ -1,5 +1,10 @@
 package config
 
+import (
+	"fmt"
+	"os"
+)
+
 type Config struct {
 	Port       string
 	PostDBHost string
@@ -7,9 +12,21 @@ type Config struct {
 }
 
 func NewConfig() *Config {
-	return &Config{
-		Port:       "8002",      //os.Getenv("POST_SERVICE_PORT"),
-		PostDBHost: "localhost", //os.Getenv("POST_DB_HOST"),
-		PostDBPort: "27017",     //os.Getenv("POST_DB_PORT"),
+	if _, err := os.Stat("/.dockerenv"); err == nil {
+		fmt.Println("docker")
+
+		return &Config{
+			Port:       os.Getenv("POST_SERVICE_PORT"),
+			PostDBHost: os.Getenv("POST_DB_HOST"),
+			PostDBPort: os.Getenv("POST_DB_PORT"),
+		}
+	} else {
+		fmt.Println("local")
+
+		return &Config{
+			Port:       "8002",
+			PostDBHost: "localhost",
+			PostDBPort: "27017",
+		}
 	}
 }
