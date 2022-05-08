@@ -6,7 +6,7 @@ type Post struct {
 	Id      primitive.ObjectID `bson:"_id"`
 	UserId  primitive.ObjectID `bson:"userId"`
 	Text    string             `bson:"text"`
-	Picture []byte             `bson:"picture"`
+	Picture string             `bson:"picture"`
 	Links   []string           `bson:"links"`
 }
 
