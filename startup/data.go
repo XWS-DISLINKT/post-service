@@ -15,14 +15,14 @@ var posts = []*domain.Post{
 	},
 	{
 		Id:      getObjectId("523b0cc3a34d25d8567f9f83"),
-		UserId:  getObjectId("623b0cc3a34d25d8567f9f86"),
+		UserId:  getObjectId("623b0cc3a34d25d8567f9f87"),
 		Text:    "Dao sam otkaz",
 		Picture: nil,
 		Links:   []string{"https://github.com/XWS-DISLINKT/dislinkt"},
 	},
 	{
 		Id:      getObjectId("523b0cc3a34d25d8567f9f84"),
-		UserId:  getObjectId("623b0cc3a34d25d8567f9f86"),
+		UserId:  getObjectId("623b0cc3a34d25d8567f9f84"),
 		Text:    "Ponovo sam se zaposlio",
 		Picture: nil,
 		Links:   []string{},

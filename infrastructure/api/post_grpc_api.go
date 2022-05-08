@@ -3,7 +3,10 @@ package api
 import (
 	"context"
 	"post-service/application"
+	"post-service/domain"
+	"post-service/infrastructure/persistence"
 
+	connection "github.com/XWS-DISLINKT/dislinkt/common/proto/connection-service"
 	pb "github.com/XWS-DISLINKT/dislinkt/common/proto/post-service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -65,6 +68,37 @@ func (handler *PostHandler) GetByUser(ctx context.Context, request *pb.GetReques
 		Posts: []*pb.Post{},
 	}
 	for _, post := range posts {
+		current := mapPost(post)
+		response.Posts = append(response.Posts, current)
+	}
+	return response, nil
+}
+
+func (handler *PostHandler) GetFeed(ctx context.Context, request *pb.GetRequest) (*pb.GetAllResponse, error) {
+	id := request.Id
+	connectionIdsStr := make([]string, 0)
+	connectionResponse, _ := persistence.ConnectionsClient("localhost:8004").GetConnectionsUsernamesFor(context.TODO(),
+		&connection.GetConnectionsUsernamesRequest{Id: id})
+	if connectionResponse.Usernames != nil {
+		connectionIdsStr = connectionResponse.Usernames //[]string{"623b0cc3a34d25d8567f9f85"} //
+	} else {
+		connectionIdsStr = []string{} //"623b0cc3a34d25d8567f9f86"}
+	}
+	//connectionIdsStr := []string{"623b0cc3a34d25d8567f9f86"}
+	var feed []*domain.Post
+	for _, cIdStr := range connectionIdsStr {
+		cId, err := primitive.ObjectIDFromHex(cIdStr)
+		if err != nil {
+			return nil, err
+		}
+		posts, err := handler.service.GetByUser(cId)
+		feed = append(feed, posts...)
+	}
+
+	response := &pb.GetAllResponse{
+		Posts: []*pb.Post{},
+	}
+	for _, post := range feed {
 		current := mapPost(post)
 		response.Posts = append(response.Posts, current)
 	}
