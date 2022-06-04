@@ -14,23 +14,59 @@ const (
 	POST_COLLECTION      = "post"
 	REACTIONS_COLLECTION = "reactions"
 	COMMENT_COLLECTION   = "comments"
+	JOBS_COLLECTION      = "jobs"
+	APIKEYS_COLLECTION   = "apiKeys"
 )
 
 type PostMongoDb struct {
 	posts     *mongo.Collection
 	reactions *mongo.Collection
 	comments  *mongo.Collection
+	jobs      *mongo.Collection
+	apiKeys   *mongo.Collection
+}
+
+func (collection *PostMongoDb) GetUserApiKey(id primitive.ObjectID) (*domain.UserApiKey, error) {
+	filter := bson.M{"_id": id}
+	return collection.filterUserApiKeysOne(filter)
+}
+
+func (collection *PostMongoDb) RegisterApiKey(key *domain.UserApiKey) error {
+	result, err := collection.apiKeys.InsertOne(context.TODO(), key)
+	if err != nil {
+		return err
+	}
+	key.UserId = result.InsertedID.(primitive.ObjectID)
+	return nil
 }
 
 func NewPostMongoDb(client *mongo.Client) domain.IPostService {
 	posts := client.Database(DATABASE).Collection(POST_COLLECTION)
 	reactions := client.Database(DATABASE).Collection(REACTIONS_COLLECTION)
 	comments := client.Database(DATABASE).Collection(COMMENT_COLLECTION)
+	jobs := client.Database(DATABASE).Collection(JOBS_COLLECTION)
+	apiKeys := client.Database(DATABASE).Collection(APIKEYS_COLLECTION)
 	return &PostMongoDb{
 		posts:     posts,
 		reactions: reactions,
 		comments:  comments,
+		jobs:      jobs,
+		apiKeys:   apiKeys,
 	}
+}
+
+func (collection *PostMongoDb) GetAllJobs() ([]*domain.Job, error) {
+	filter := bson.D{{}}
+	return collection.filterJobs(filter)
+}
+
+func (collection *PostMongoDb) InsertJob(job *domain.Job) error {
+	result, err := collection.jobs.InsertOne(context.TODO(), job)
+	if err != nil {
+		return err
+	}
+	job.Id = result.InsertedID.(primitive.ObjectID)
+	return nil
 }
 
 func (collection *PostMongoDb) Get(id primitive.ObjectID) (*domain.Post, error) {
@@ -125,9 +161,38 @@ func (collection *PostMongoDb) filterComments(filter interface{}) ([]*domain.Com
 	return decodeComment(cursor)
 }
 
+func (collection *PostMongoDb) filterJobs(filter interface{}) ([]*domain.Job, error) {
+	cursor, err := collection.jobs.Find(context.TODO(), filter)
+	defer cursor.Close(context.TODO())
+
+	if err != nil {
+		return nil, err
+	}
+	return decodeJobs(cursor)
+}
+
+func decodeJobs(cursor *mongo.Cursor) (jobs []*domain.Job, err error) {
+	for cursor.Next(context.TODO()) {
+		var job domain.Job
+		err = cursor.Decode(&job)
+		if err != nil {
+			return
+		}
+		jobs = append(jobs, &job)
+	}
+	err = cursor.Err()
+	return
+}
+
 func (collection *PostMongoDb) filterPostsOne(filter interface{}) (post *domain.Post, err error) {
 	result := collection.posts.FindOne(context.TODO(), filter)
 	err = result.Decode(&post)
+	return
+}
+
+func (collection *PostMongoDb) filterUserApiKeysOne(filter bson.M) (apiKey *domain.UserApiKey, err error) {
+	result := collection.apiKeys.FindOne(context.TODO(), filter)
+	err = result.Decode(&apiKey)
 	return
 }
 

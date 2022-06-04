@@ -2,7 +2,9 @@ package application
 
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"math/rand"
 	"post-service/domain"
+	"strconv"
 )
 
 type PostService struct {
@@ -13,6 +15,19 @@ func NewPostService(iPostService domain.IPostService) *PostService {
 	return &PostService{
 		iPostService: iPostService,
 	}
+}
+
+func (service *PostService) RegisterApiKey(key *domain.UserApiKey) error {
+	key.ApiKey = strconv.Itoa(rand.Int())
+	return service.iPostService.RegisterApiKey(key)
+}
+
+func (service *PostService) GetAllJobs() ([]*domain.Job, error) {
+	return service.iPostService.GetAllJobs()
+}
+
+func (service *PostService) InsertJob(job *domain.Job) error {
+	return service.iPostService.InsertJob(job)
 }
 
 func (service *PostService) Get(id primitive.ObjectID) (*domain.Post, error) {
@@ -49,4 +64,8 @@ func (service *PostService) GetAllReactionsByPost(id primitive.ObjectID) ([]*dom
 
 func (service *PostService) GetAllCommentsByPost(id primitive.ObjectID) ([]*domain.Comment, error) {
 	return service.iPostService.GetAllCommentsByPost(id)
+}
+
+func (service *PostService) GetUserApiKey(id primitive.ObjectID) (*domain.UserApiKey, error) {
+	return service.iPostService.GetUserApiKey(id)
 }

@@ -1,6 +1,9 @@
 package domain
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/protobuf/types/known/timestamppb"
+)
 
 type Post struct {
 	Id      primitive.ObjectID `bson:"_id"`
@@ -22,4 +25,19 @@ type Comment struct {
 	PostId primitive.ObjectID `bson:"postId"`
 	UserId primitive.ObjectID `bson:"userId"`
 	Text   string             `bson:"text"`
+}
+
+type Job struct {
+	Id          primitive.ObjectID `bson:"_id"`
+	Position    string             `bson:"position"`
+	CompanyName string             `bson:"companyName"`
+	//Seniority   Job_Seniority          `bson:"seniority"`
+	Location    string                 `bson:"location"`
+	Description string                 `bson:"description"`
+	ClosingDate *timestamppb.Timestamp `bson:"closingDate"`
+}
+
+type UserApiKey struct {
+	UserId primitive.ObjectID `bson:"_id"`
+	ApiKey string             `bson:"apiKey"`
 }

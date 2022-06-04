@@ -15,4 +15,8 @@ type IPostService interface {
 	InsertComment(comment *Comment) error
 	GetAllReactionsByPost(id primitive.ObjectID) ([]*PostReaction, error)
 	GetAllCommentsByPost(id primitive.ObjectID) ([]*Comment, error)
+	InsertJob(job *Job) error
+	GetAllJobs() ([]*Job, error)
+	RegisterApiKey(*UserApiKey) error
+	GetUserApiKey(id primitive.ObjectID) (*UserApiKey, error)
 }

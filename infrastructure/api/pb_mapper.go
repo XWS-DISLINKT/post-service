@@ -7,6 +7,30 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+func mapJobToDomain(reaction *pb.Job) *domain.Job {
+	return &domain.Job{
+		Id:          primitive.NewObjectID(),
+		Position:    reaction.Position,
+		CompanyName: reaction.CompanyName,
+		Location:    reaction.Location,
+		Description: reaction.Description,
+		ClosingDate: reaction.ClosingDate,
+	}
+}
+
+func mapJob(post *domain.Job) *pb.Job {
+	postPb := &pb.Job{
+		Id:          post.Id.Hex(),
+		Position:    post.Position,
+		CompanyName: post.CompanyName,
+		Seniority:   0,
+		Location:    post.Location,
+		Description: post.Description,
+		ClosingDate: nil,
+	}
+	return postPb
+}
+
 func mapPost(post *domain.Post) *pb.Post {
 	postPb := &pb.Post{
 		Id:      post.Id.Hex(),

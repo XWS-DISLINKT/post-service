@@ -22,6 +22,65 @@ func NewPostHandler(service *application.PostService) *PostHandler {
 	}
 }
 
+func (handler *PostHandler) RegisterApiKey(ctx context.Context, request *pb.GetApiKeyRequest) (*pb.GetApiKeyResponse, error) {
+	userId, err := primitive.ObjectIDFromHex(request.UserId)
+	if err != nil {
+		return nil, err
+	}
+	userApiKey := domain.UserApiKey{
+		UserId: userId,
+	}
+	err = handler.service.RegisterApiKey(&userApiKey)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetApiKeyResponse{
+		UserId: userApiKey.UserId.Hex(),
+		ApiKey: userApiKey.ApiKey,
+	}, nil
+}
+
+func (handler *PostHandler) PostJob(ctx context.Context, request *pb.PostJobRequest) (*pb.Job, error) {
+	if !handler.apiKeyValid(request.UserId, request.ApiKey) {
+		return nil, nil
+	}
+	response := request.Job
+	job := mapJobToDomain(response)
+	err := handler.service.InsertJob(job)
+	if err != nil {
+		return nil, err
+	}
+	response.Id = job.Id.Hex()
+	return response, nil
+}
+
+func (handler *PostHandler) apiKeyValid(userId string, apiKey string) bool {
+	objectId, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		return false
+	}
+	userApiKey, err := handler.service.GetUserApiKey(objectId)
+	if err != nil {
+		return false
+	}
+	return userApiKey.ApiKey == apiKey
+}
+
+func (handler *PostHandler) GetAllJobs(ctx context.Context, request *pb.GetAllJobsRequest) (*pb.GetAllJobsResponse, error) {
+	jobs, err := handler.service.GetAllJobs()
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.GetAllJobsResponse{
+		Jobs: []*pb.Job{},
+	}
+	for _, job := range jobs {
+		current := mapJob(job)
+		response.Jobs = append(response.Jobs, current)
+	}
+	return response, nil
+}
+
 func (handler *PostHandler) Get(ctx context.Context, request *pb.GetRequest) (*pb.GetResponse, error) {
 	id := request.Id
 	objectId, err := primitive.ObjectIDFromHex(id)
