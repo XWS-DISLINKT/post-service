@@ -67,6 +67,21 @@ func (handler *PostHandler) apiKeyValid(userId string, apiKey string) bool {
 	return userApiKey.ApiKey == apiKey
 }
 
+func (handler *PostHandler) SearchJobsByPosition(ctx context.Context, request *pb.SearchJobsByPositionRequest) (*pb.SearchJobsByPositionResponse, error) {
+	jobs, err := handler.service.SearchJobsByPosition(request.Search)
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.SearchJobsByPositionResponse{
+		Jobs: []*pb.Job{},
+	}
+	for _, job := range jobs {
+		current := mapJob(job)
+		response.Jobs = append(response.Jobs, current)
+	}
+	return response, nil
+}
+
 func (handler *PostHandler) GetAllJobs(ctx context.Context, request *pb.GetAllJobsRequest) (*pb.GetAllJobsResponse, error) {
 	jobs, err := handler.service.GetAllJobs()
 	if err != nil {

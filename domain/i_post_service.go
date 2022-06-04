@@ -19,4 +19,5 @@ type IPostService interface {
 	GetAllJobs() ([]*Job, error)
 	RegisterApiKey(*UserApiKey) error
 	GetUserApiKey(id primitive.ObjectID) (*UserApiKey, error)
+	SearchJobsByPosition(search string) ([]*Job, error)
 }

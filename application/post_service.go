@@ -16,6 +16,9 @@ func NewPostService(iPostService domain.IPostService) *PostService {
 		iPostService: iPostService,
 	}
 }
+func (service *PostService) SearchJobsByPosition(search string) ([]*domain.Job, error) {
+	return service.iPostService.SearchJobsByPosition(search)
+}
 
 func (service *PostService) RegisterApiKey(key *domain.UserApiKey) error {
 	key.ApiKey = strconv.Itoa(rand.Int())

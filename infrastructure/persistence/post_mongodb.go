@@ -55,6 +55,11 @@ func NewPostMongoDb(client *mongo.Client) domain.IPostService {
 	}
 }
 
+func (collection *PostMongoDb) SearchJobsByPosition(search string) ([]*domain.Job, error) {
+	filter := bson.M{"position": search}
+	return collection.filterJobs(filter)
+}
+
 func (collection *PostMongoDb) GetAllJobs() ([]*domain.Job, error) {
 	filter := bson.D{{}}
 	return collection.filterJobs(filter)
