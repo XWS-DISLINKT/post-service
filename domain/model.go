@@ -18,13 +18,15 @@ type PostReaction struct {
 	PostId   primitive.ObjectID `bson:"postId"`
 	UserId   primitive.ObjectID `bson:"userId"`
 	Reaction string             `bson:"reaction"`
+	Username string             `bson:"username"`
 }
 
 type Comment struct {
-	Id     primitive.ObjectID `bson:"_id"`
-	PostId primitive.ObjectID `bson:"postId"`
-	UserId primitive.ObjectID `bson:"userId"`
-	Text   string             `bson:"text"`
+	Id       primitive.ObjectID `bson:"_id"`
+	PostId   primitive.ObjectID `bson:"postId"`
+	UserId   primitive.ObjectID `bson:"userId"`
+	Text     string             `bson:"text"`
+	Username string             `bson:"username"`
 }
 
 type Job struct {

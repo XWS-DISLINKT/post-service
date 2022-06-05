@@ -66,6 +66,7 @@ func mapReaction(reaction *domain.PostReaction) *pb.PostReaction {
 		UserId:   reaction.UserId.Hex(),
 		PostId:   reaction.PostId.Hex(),
 		Reaction: reaction.Reaction,
+		Username: reaction.Username,
 	}
 	return reactionPb
 }
@@ -88,15 +89,17 @@ func mapReactionToDomain(reaction *pb.PostReaction) *domain.PostReaction {
 		UserId:   userId,
 		PostId:   postId,
 		Reaction: reaction.Reaction,
+		Username: reaction.Username,
 	}
 }
 
 func mapComment(comment *domain.Comment) *pb.Comment {
 	commentPb := &pb.Comment{
-		Id:     comment.Id.Hex(),
-		UserId: comment.UserId.Hex(),
-		PostId: comment.PostId.Hex(),
-		Text:   comment.Text,
+		Id:       comment.Id.Hex(),
+		UserId:   comment.UserId.Hex(),
+		PostId:   comment.PostId.Hex(),
+		Text:     comment.Text,
+		Username: comment.Username,
 	}
 	return commentPb
 }
@@ -115,9 +118,10 @@ func mapCommentToDomain(comment *pb.Comment) *domain.Comment {
 		return nil
 	}
 	return &domain.Comment{
-		Id:     id,
-		UserId: userId,
-		PostId: postId,
-		Text:   comment.Text,
+		Id:       id,
+		UserId:   userId,
+		PostId:   postId,
+		Text:     comment.Text,
+		Username: comment.Username,
 	}
 }
