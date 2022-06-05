@@ -21,6 +21,11 @@ func (service *PostService) SearchJobsByPosition(search string) ([]*domain.Job, 
 }
 
 func (service *PostService) RegisterApiKey(key *domain.UserApiKey) error {
+	userApiKey, err := service.iPostService.GetUserApiKeyById(key.UserId)
+	if err == nil {
+		*key = *userApiKey
+		return nil
+	}
 	key.ApiKey = strconv.Itoa(rand.Int())
 	return service.iPostService.RegisterApiKey(key)
 }

@@ -31,6 +31,11 @@ func (collection *PostMongoDb) GetUserApiKey(apiKey string) (*domain.UserApiKey,
 	return collection.filterUserApiKeysOne(filter)
 }
 
+func (collection *PostMongoDb) GetUserApiKeyById(id primitive.ObjectID) (*domain.UserApiKey, error) {
+	filter := bson.M{"_id": id}
+	return collection.filterUserApiKeysOne(filter)
+}
+
 func (collection *PostMongoDb) RegisterApiKey(key *domain.UserApiKey) error {
 	result, err := collection.apiKeys.InsertOne(context.TODO(), key)
 	if err != nil {
