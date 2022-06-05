@@ -31,8 +31,8 @@ func mapJob(post *domain.Job) *pb.Job {
 	return postPb
 }
 
-func mapPost(post *domain.Post) *pb.Post {
-	postPb := &pb.Post{
+func mapPost(post *domain.Post) *pb.PostM {
+	postPb := &pb.PostM{
 		Id:      post.Id.Hex(),
 		UserId:  post.UserId.Hex(),
 		Text:    post.Text,
@@ -42,11 +42,9 @@ func mapPost(post *domain.Post) *pb.Post {
 	return postPb
 }
 
-func mapPostToDomain(post *pb.Post) *domain.Post {
-	id, err := primitive.ObjectIDFromHex(post.Id)
-	if err != nil {
-		return nil
-	}
+func mapPostToDomain(post *pb.PostM) *domain.Post {
+	id := primitive.NewObjectID()
+
 	userId, err := primitive.ObjectIDFromHex(post.UserId)
 	if err != nil {
 		return nil

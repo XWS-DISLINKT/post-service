@@ -130,7 +130,7 @@ func (handler *PostHandler) GetAll(ctx context.Context, request *pb.GetAllReques
 		return nil, err
 	}
 	response := &pb.GetAllResponse{
-		Posts: []*pb.Post{},
+		Posts: []*pb.PostM{},
 	}
 	for _, post := range posts {
 		current := mapPost(post)
@@ -150,7 +150,7 @@ func (handler *PostHandler) GetByUser(ctx context.Context, request *pb.GetReques
 		return nil, err
 	}
 	response := &pb.GetAllResponse{
-		Posts: []*pb.Post{},
+		Posts: []*pb.PostM{},
 	}
 	for _, post := range posts {
 		current := mapPost(post)
@@ -186,7 +186,7 @@ func (handler *PostHandler) GetFeed(ctx context.Context, request *pb.GetRequest)
 	}
 
 	response := &pb.GetAllResponse{
-		Posts: []*pb.Post{},
+		Posts: []*pb.PostM{},
 	}
 	for _, post := range feed {
 		current := mapPost(post)
@@ -195,13 +195,13 @@ func (handler *PostHandler) GetFeed(ctx context.Context, request *pb.GetRequest)
 	return response, nil
 }
 
-func (handler *PostHandler) Post(ctx context.Context, request *pb.PostRequest) (*pb.PostResponse, error) {
-	post := mapPostToDomain((*request).Post)
+func (handler *PostHandler) Post(ctx context.Context, request *pb.PostM) (*pb.PostM, error) {
+	post := mapPostToDomain(request)
 	err := handler.service.Create(post)
 	if err != nil {
 		return nil, err
 	}
-	return &pb.PostResponse{Post: mapPost(post)}, nil
+	return mapPost(post), nil
 }
 
 func (handler *PostHandler) LikePost(ctx context.Context, request *pb.ReactionRequest) (*pb.ReactionResponse, error) {
