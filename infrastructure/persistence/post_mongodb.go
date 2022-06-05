@@ -26,8 +26,8 @@ type PostMongoDb struct {
 	apiKeys   *mongo.Collection
 }
 
-func (collection *PostMongoDb) GetUserApiKey(id primitive.ObjectID) (*domain.UserApiKey, error) {
-	filter := bson.M{"_id": id}
+func (collection *PostMongoDb) GetUserApiKey(apiKey string) (*domain.UserApiKey, error) {
+	filter := bson.M{"apiKey": apiKey}
 	return collection.filterUserApiKeysOne(filter)
 }
 

@@ -35,6 +35,7 @@ type Job struct {
 	Location    string                 `bson:"location"`
 	Description string                 `bson:"description"`
 	ClosingDate *timestamppb.Timestamp `bson:"closingDate"`
+	UserId      string                 `bson:"userId"`
 }
 
 type UserApiKey struct {

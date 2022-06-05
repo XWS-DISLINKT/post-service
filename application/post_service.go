@@ -69,6 +69,6 @@ func (service *PostService) GetAllCommentsByPost(id primitive.ObjectID) ([]*doma
 	return service.iPostService.GetAllCommentsByPost(id)
 }
 
-func (service *PostService) GetUserApiKey(id primitive.ObjectID) (*domain.UserApiKey, error) {
-	return service.iPostService.GetUserApiKey(id)
+func (service *PostService) GetUserApiKey(apiKey string) (*domain.UserApiKey, error) {
+	return service.iPostService.GetUserApiKey(apiKey)
 }

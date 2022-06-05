@@ -23,6 +23,17 @@ func NewPostHandler(service *application.PostService) *PostHandler {
 	}
 }
 
+func (handler *PostHandler) PostJobDislinkt(ctx context.Context, request *pb.PostJobDislinktRequest) (*pb.Job, error) {
+	response := request.Job
+	job := mapJobToDomain(response)
+	err := handler.service.InsertJob(job)
+	if err != nil {
+		return nil, err
+	}
+	response.Id = job.Id.Hex()
+	return response, nil
+}
+
 func (handler *PostHandler) RegisterApiKey(ctx context.Context, request *pb.GetApiKeyRequest) (*pb.GetApiKeyResponse, error) {
 	userId, err := primitive.ObjectIDFromHex(request.UserId)
 	if err != nil {
@@ -42,29 +53,28 @@ func (handler *PostHandler) RegisterApiKey(ctx context.Context, request *pb.GetA
 }
 
 func (handler *PostHandler) PostJob(ctx context.Context, request *pb.PostJobRequest) (*pb.Job, error) {
-	if !handler.apiKeyValid(request.UserId, request.ApiKey) {
-		return nil, nil
+	userId, err := handler.getUserID(request.ApiKey)
+	if err != nil {
+		return nil, err
 	}
 	response := request.Job
 	job := mapJobToDomain(response)
-	err := handler.service.InsertJob(job)
+	job.UserId = userId
+	err = handler.service.InsertJob(job)
 	if err != nil {
 		return nil, err
 	}
 	response.Id = job.Id.Hex()
+	response.UserId = userId
 	return response, nil
 }
 
-func (handler *PostHandler) apiKeyValid(userId string, apiKey string) bool {
-	objectId, err := primitive.ObjectIDFromHex(userId)
+func (handler *PostHandler) getUserID(apiKey string) (string, error) {
+	userApiKey, err := handler.service.GetUserApiKey(apiKey)
 	if err != nil {
-		return false
+		return "", err
 	}
-	userApiKey, err := handler.service.GetUserApiKey(objectId)
-	if err != nil {
-		return false
-	}
-	return userApiKey.ApiKey == apiKey
+	return userApiKey.UserId.Hex(), nil
 }
 
 func (handler *PostHandler) SearchJobsByPosition(ctx context.Context, request *pb.SearchJobsByPositionRequest) (*pb.SearchJobsByPositionResponse, error) {
