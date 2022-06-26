@@ -2,10 +2,11 @@ package api
 
 import (
 	"context"
-	"os"
+	"fmt"
 	"post-service/application"
 	"post-service/domain"
 	"post-service/infrastructure/services"
+	"post-service/startup/config"
 
 	connection "github.com/XWS-DISLINKT/dislinkt/common/proto/connection-service"
 	pb "github.com/XWS-DISLINKT/dislinkt/common/proto/post-service"
@@ -162,12 +163,10 @@ func (handler *PostHandler) GetByUser(ctx context.Context, request *pb.GetReques
 func (handler *PostHandler) GetFeed(ctx context.Context, request *pb.GetRequest) (*pb.GetAllResponse, error) {
 	id := request.Id
 	connectionIdsStr := make([]string, 0)
-	connectionResponse, _ := services.ConnectionsClient("localhost:8004").GetConnectionsUsernamesFor(context.TODO(),
+	cfg := config.NewConfig()
+	connectionAddress := fmt.Sprintf(cfg.ConnectionServiceHost + ":" + cfg.ConnectionServicePort)
+	connectionResponse, _ := services.ConnectionsClient(connectionAddress).GetConnectionsUsernamesFor(context.TODO(),
 		&connection.GetConnectionsUsernamesRequest{Id: id})
-	if _, err := os.Stat("/.dockerenv"); err == nil {
-		connectionResponse, _ = services.ConnectionsClient(os.Getenv("CONNECTION_SERVICE_HOST")+":"+os.Getenv("CONNECTION_SERVICE_PORT")).GetConnectionsUsernamesFor(context.TODO(),
-			&connection.GetConnectionsUsernamesRequest{Id: id})
-	}
 
 	if connectionResponse.Usernames != nil {
 		connectionIdsStr = connectionResponse.Usernames //[]string{"623b0cc3a34d25d8567f9f85"} //
