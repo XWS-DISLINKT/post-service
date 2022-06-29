@@ -44,3 +44,8 @@ type UserApiKey struct {
 	UserId primitive.ObjectID `bson:"_id"`
 	ApiKey string             `bson:"apiKey"`
 }
+
+type JobPosition struct {
+	JobId    primitive.ObjectID `bson:"_id"`
+	Position string             `bson:"position"`
+}

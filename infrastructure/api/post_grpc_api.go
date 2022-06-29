@@ -24,6 +24,21 @@ func NewPostHandler(service *application.PostService) *PostHandler {
 	}
 }
 
+func (handler *PostHandler) SuggestJob(ctx context.Context, request *pb.SuggestJobRequest) (*pb.SuggestJobResponse, error) {
+	jobs, err := handler.service.SuggestJobs(request.Skill, request.Experience)
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.SuggestJobResponse{}
+	for _, job := range jobs {
+		response.JobPositions = append(response.JobPositions, &pb.JobPosition{
+			JobId:    job.JobId.Hex(),
+			Position: job.Position,
+		})
+	}
+	return response, nil
+}
+
 func (handler *PostHandler) PostJobDislinkt(ctx context.Context, request *pb.PostJobDislinktRequest) (*pb.Job, error) {
 	response := request.Job
 	job := mapJobToDomain(response)
