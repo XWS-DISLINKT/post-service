@@ -28,11 +28,11 @@ func NewConfig() *Config {
 			PostDBPort:            os.Getenv("POST_DB_PORT"),
 			ConnectionServiceHost: os.Getenv("CONNECTION_SERVICE_HOST"),
 			ConnectionServicePort: os.Getenv("CONNECTION_SERVICE_PORT"),
-			Neo4jPort:             os.Getenv("NEO4j_PORT"),
-			Neo4jHost:             os.Getenv("NEO4j_HOST"),
-			Neo4jProtocol:         os.Getenv("NEO4j_PROTOCOL"),
-			Neo4jUsername:         os.Getenv("NEO4j_USERNAME"),
-			Neo4jPassword:         os.Getenv("NEO4j_PASSWORD"),
+			Neo4jPort:             os.Getenv("POST_GRAPH_DB_PORT"),
+			Neo4jHost:             os.Getenv("POST_GRAPH_DB_HOST"),
+			Neo4jProtocol:         os.Getenv("POST_GRAPH_DB_PROTOCOL"),
+			Neo4jUsername:         os.Getenv("POST_GRAPH_DB_USERNAME"),
+			Neo4jPassword:         os.Getenv("POST_GRAPH_DB_PASSWORD"),
 		}
 	} else {
 		fmt.Println("local")
