@@ -10,6 +10,7 @@ import (
 
 	connection "github.com/XWS-DISLINKT/dislinkt/common/proto/connection-service"
 	pb "github.com/XWS-DISLINKT/dislinkt/common/proto/post-service"
+	profile "github.com/XWS-DISLINKT/dislinkt/common/proto/profile-service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -215,6 +216,29 @@ func (handler *PostHandler) Post(ctx context.Context, request *pb.PostM) (*pb.Po
 	if err != nil {
 		return nil, err
 	}
+
+	//dobavljanje idjeva konekcija
+	connectionIdsStr := make([]string, 0)
+	cfg := config.NewConfig()
+	connectionAddress := fmt.Sprintf(cfg.ConnectionServiceHost + ":" + cfg.ConnectionServicePort)
+	connectionResponse, _ := services.ConnectionsClient(connectionAddress).GetConnectionsUsernamesFor(context.TODO(),
+		&connection.GetConnectionsUsernamesRequest{Id: post.UserId.Hex()})
+
+	if connectionResponse.Usernames != nil {
+		connectionIdsStr = connectionResponse.Usernames //[]string{"623b0cc3a34d25d8567f9f85"} //
+	} else {
+		connectionIdsStr = []string{} //"623b0cc3a34d25d8567f9f86"}
+	}
+	fmt.Printf("connection ids: {%s}", connectionIdsStr)
+	//kreiranje notifikacijeza svakog od njih
+	profileAddress := fmt.Sprintf(cfg.ProfileServiceHost + ":" + cfg.ProfileServicePort)
+	for _, cis := range connectionIdsStr {
+		profileResponse, _ := services.ProfilesClient(profileAddress).SendNotification(context.TODO(),
+			&profile.NewNotificationRequest{SenderId: post.UserId.Hex(), ReceiverId: cis, NotificationType: "post"})
+
+		fmt.Printf("\ncreated notification {%s}", profileResponse.Id)
+	}
+
 	return mapPost(post), nil
 }
 
