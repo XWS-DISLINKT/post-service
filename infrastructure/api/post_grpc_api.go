@@ -25,6 +25,26 @@ func NewPostHandler(service *application.PostService) *PostHandler {
 	}
 }
 
+func (handler *PostHandler) GetSuggestJobsFor(ctx context.Context, request *pb.GetSuggestJobsForRequest) (*pb.GetSuggestJobsForResponse, error) {
+
+	cfg := config.NewConfig()
+	profileAddress := fmt.Sprintf(cfg.ProfileServiceHost + ":" + cfg.ProfileServicePort)
+	profileResponse, _ := services.ProfilesClient(profileAddress).Get(context.TODO(), &profile.GetRequest{Id: request.Id})
+
+	jobs, err := handler.service.SuggestJobs(profileResponse.Education[0].Degree, profileResponse.Experience[0].JobTitle)
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.GetSuggestJobsForResponse{}
+	for _, job := range jobs {
+		response.JobPositions = append(response.JobPositions, &pb.JobPosition{
+			JobId:    job.JobId.Hex(),
+			Position: job.Position,
+		})
+	}
+	return response, nil
+}
+
 func (handler *PostHandler) SuggestJob(ctx context.Context, request *pb.SuggestJobRequest) (*pb.SuggestJobResponse, error) {
 	jobs, err := handler.service.SuggestJobs(request.Skill, request.Experience)
 	if err != nil {
